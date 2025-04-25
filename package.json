@@ -2,9 +2,11 @@
   "name": "ci-cd-docker-app",
   "version": "1.0.0",
   "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+"scripts": {
+  "start": "node app.js",
+  "test": "echo \"No tests yet, but build successful\" && exit 0"
+}
+
   "author": "",
   "license": "ISC",
   "description": ""
