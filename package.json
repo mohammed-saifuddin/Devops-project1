@@ -2,12 +2,12 @@
   "name": "ci-cd-docker-app",
   "version": "1.0.0",
   "main": "app.js",
-"scripts": {
-  "start": "node app.js",
-  "test": "echo \"No tests yet, but build successful\" && exit 0"
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo 'No tests defined yet'"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
 
-  "author": "",
-  "license": "ISC",
-  "description": ""
-}
