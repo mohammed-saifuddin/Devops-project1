@@ -41,10 +41,10 @@ kubectl get services
 Before pushing your changes, test everything locally:
 
  Build the image locally
-docker build -t yourappname .
+docker build -t app .
 
 Run the image
-docker run -p 3000:3000 yourappname
+docker run -p 3000:3000 app
 
  Test the app at http://localhost:3000
 
