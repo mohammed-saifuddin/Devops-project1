@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-stable
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app-stable
+  template:
+    metadata:
+      labels:
+        app: app-stable
+    spec:
+      containers:
+      - name: app
+        image: saifuddin337/app-stable:latest
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-stable
+spec:
+  selector:
+    app: app-stable
+  ports:
+  - port: 8080
+    targetPort: 8080
