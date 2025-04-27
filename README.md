@@ -49,26 +49,6 @@ kubectl get pods -n istio-system
 
 Create a **Dockerfile** for your application. Below is a sample Dockerfile for a Node.js app:
 
-```Dockerfile
-# Base image
-FROM node:16
-
-# Set working directory
-WORKDIR /app
-
-# Install dependencies
-COPY package.json package-lock.json ./
-RUN npm install
-
-# Copy application code
-COPY . .
-
-# Expose the port
-EXPOSE 3000
-
-# Start the application
-CMD ["npm", "start"]
-```
 
 Build and push your Docker image to **Docker Hub**:
 
@@ -80,69 +60,10 @@ docker build -t yourusername/yourapp:v1 .
 docker push yourusername/yourapp:v1
 ```
 
-Repeat for the **canary version** (e.g., `yourusername/yourapp:v2`).
-
-#### Deployments Configuration
+ Deployments Configuration
 
 Create two YAML files for stable and canary versions:
 
-##### `stable-deployment.yaml`
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: yourapp-stable
-  labels:
-    app: yourapp
-    version: stable
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: yourapp
-      version: stable
-  template:
-    metadata:
-      labels:
-        app: yourapp
-        version: stable
-    spec:
-      containers:
-        - name: yourapp
-          image: yourusername/yourapp:v1
-          ports:
-            - containerPort: 3000
-```
-
-##### `canary-deployment.yaml`
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: yourapp-canary
-  labels:
-    app: yourapp
-    version: canary
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: yourapp
-      version: canary
-  template:
-    metadata:
-      labels:
-        app: yourapp
-        version: canary
-    spec:
-      containers:
-        - name: yourapp
-          image: yourusername/yourapp:v2
-          ports:
-            - containerPort: 3000
-```
 
 Apply these deployments to the K3s cluster:
 
@@ -152,50 +73,7 @@ kubectl apply -f canary-deployment.yaml
 ```
 4. Configure Istio Gateway and Routing
 
-Create **Istio Gateway** and **VirtualService** configuration files to control the traffic routing between stable and canary versions.
-
- `istio-gateway.yaml`
-
-```yaml
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  name: yourapp-gateway
-  namespace: default
-spec:
-  selector:
-    istio: ingressgateway # Use Istio's default ingress gateway
-  servers:
-  - port:
-      number: 80
-      name: http
-      protocol: HTTP
-    hosts:
-    - "*"
-```
-
- `istio-virtualservice.yaml`
-
-```yaml
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: yourapp-virtualservice
-  namespace: default
-spec:
-  hosts:
-    - "*"
-  http:
-    - route:
-        - destination:
-            host: yourapp
-            subset: stable
-          weight: 80
-        - destination:
-            host: yourapp
-            subset: canary
-          weight: 20
-```
+Create **Istio Gateway** and **VirtualService** configuration files to control the traffic routing between stable and canary versions
 
 Apply the Istio configurations:
 
@@ -209,22 +87,7 @@ To monitor the traffic, use **Prometheus** and **Grafana** integrated with Istio
 
 To change traffic routing, adjust the weights in the `VirtualService` configuration. For example, to send 50% of traffic to the canary version, modify the configuration:
 
-```yaml
-- route:
-    - destination:
-        host: yourapp
-        subset: stable
-      weight: 50
-    - destination:
-        host: yourapp
-        subset: canary
-      weight: 50
-```
 
-
-
-
-Apply the updated configuration:
 
 ```bash
 kubectl apply -f istio-virtualservice.yaml
